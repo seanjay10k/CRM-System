@@ -1,7 +1,7 @@
 # CRM-System
 Customer Relationship Management System. 
 Enables a company to manage their customer's information, add details of calls made by the customer to their own file and implement a diary
-for all users of this system. This is a project I did while learning spring framework.
+for all users of this system. This is a project I did while learning spring framework. All jar files included in lib folder.
 
 Key concepts: 
 .Programming through interfaces .Singleton & Prototype beans .Dependency Injection .Configuration through xml 
