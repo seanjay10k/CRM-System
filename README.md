@@ -1,8 +1,9 @@
 # CRM-System
 Customer Relationship Management System. 
 Enables a company to manage their customer's information, add details of calls made by the customer to their own file and implement a diary
-for all users of this system. This is a project I did while learning spring framework. 
-Key skills practiced are: 
+for all users of this system. This is a project I did while learning spring framework.
+
+Key concepts: 
 .Programming through interfaces .Singleton & Prototype beans .Dependency Injection .Configuration through xml 
 .Resource Injection via Annotations .Aspect Oriented Programming .Proxy design pattern .Application Transactions
 .SpEL .AspectJ pointcut syntax . Unit testing .Integration testing .JPA & Hibernate
