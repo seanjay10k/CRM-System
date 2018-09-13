@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/context
+   		 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- Annotations Support -->
+	<context:annotation-config />
+	<!-- TransactionManager for JPA -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory"
+			ref="entityManagerFactory" />
+	</bean>
+
+	<!-- Advice -->
+	<bean id="performanceTimingAdvice"
+		class="com.sp.advice.PerformanceTimingAdvice" />
+	<!-- AOP Weaving -->
+	<aop:config>
+		<aop:aspect ref="performanceTimingAdvice">
+			<aop:around method="RecordTiming"
+				pointcut="execution(* com.sp.services..*.*(..)  ) ||
+					    		 execution(* com.sp.dataaccess.*.*(..))" />
+		</aop:aspect>
+	</aop:config>
+
+	<!-- Transaction -->
+	<tx:annotation-driven
+		transaction-manager="transactionManager" />
+
+</beans>
