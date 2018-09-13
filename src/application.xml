@@ -1,0 +1,84 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	 xmlns:tx="http://www.springframework.org/schema/tx"
+	 xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/context
+   		 http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<!-- Annotations Support -->
+	<context:annotation-config/>
+
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+			<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+
+	<!-- DataSource -->
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName"
+			value="org.hsqldb.jdbcDriver" />
+		<property name="url"
+			value="jdbc:hsqldb:file:database.dat;shutdown=true" />
+		<property name="username" value="sa" />
+		<property name="password" value="" />
+	</bean>
+
+	<!-- Templates -->
+	<bean id="template"
+		class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<!-- DAOs -->
+	<bean id="customerDao"
+		class="com.sp.dataaccess.CustomerDaoImpl"
+		init-method="createTable">
+		<constructor-arg ref="template" />
+	</bean>
+
+	<bean id="actionDao"
+		class="com.sp.dataaccess.ActionDaoJdbcImpl"
+		init-method="createTables">
+		<constructor-arg ref="template" />
+	</bean>
+
+
+	<!-- Service Beans -->
+
+	<bean id="customerService"
+		class="com.sp.services.customers.CustomerManagementServiceProductionImpl">
+		<constructor-arg ref="customerDao" />
+	</bean>
+
+	<bean id="diaryService"
+		class="com.sp.services.diary.DiaryManagementServiceProductionImpl">
+		<constructor-arg ref="actionDao" />
+	</bean>
+
+	<bean id="callService"
+		class="com.sp.services.calls.CallHandlingServiceImpl">
+		<constructor-arg ref="customerService" />
+		<constructor-arg ref="diaryService" />
+	</bean>
+	
+	<!-- Advice -->
+	<bean id="performanceTimingAdvice" class="com.sp.advice.PerformanceTimingAdvice"/>
+	 <!-- AOP Weaving -->
+	<aop:config>
+		<aop:aspect ref="performanceTimingAdvice">
+			<aop:around method="RecordTiming"
+					    pointcut="execution(* com.sp.services..*.*(..)  ) ||
+					    		 execution(* com.sp.dataaccess.*.*(..))"	/>		
+		</aop:aspect>
+	</aop:config>	
+	
+	<!-- Transaction -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+</beans>
